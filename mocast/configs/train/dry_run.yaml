@@ -1,0 +1,33 @@
+# 快速 dry-run / CI 配置：小模型 + 小数据 + 少量 epoch（L1 验收）
+defaults:
+  - ../train/default.yaml
+
+run:
+  name: dryrun
+
+model:
+  target_size: [64, 64]        # must match dataset.resize / dataset.height,width
+
+train:
+  epochs: 3
+  batch_size: 4
+  num_workers: 0
+  amp: false
+  log_every: 5
+  max_val_batches: 4
+  early_stop: {patience: 50, monitor: val_csi, mode: max}
+
+eval:
+  perceptual: false
+  lpips: false
+  max_batches: 4
+
+dataset:
+  name: synthetic
+  n_sequences: 12
+  frames_per_sequence: 25
+  height: 64
+  width: 64
+  stride: 5
+  filter: {enabled: true, min_intensity: 0.2, min_rain_pixels: 4, min_rain_frames: 1}
+  split_config: {mode: ratio, ratios: {train: 0.7, val: 0.15, test: 0.15}, seed: 2026}

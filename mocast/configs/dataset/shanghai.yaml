@@ -1,0 +1,33 @@
+# Shanghai / Pudong (China, 2015-2018, radar echo, 6 min, 0.01 deg).
+dataset:
+  name: shanghai
+  raw_root: mocast/data/nh_radar_comp_echo
+  file_patterns: ["**/*.png"]
+  timestamp_regex: '(\d{14})'
+  continuity_seconds: [240, 480]           # 扫描周期约 6 min，超出范围则切断序列
+  pixel_to_dbz: {scale: 0.27450980392156865, offset: 0.0}  # dBZ = pixel * 70 / 255
+  npz_key: null
+
+  input_len: 5
+  target_len: 20
+  stride: 12
+  resize: [128, 128]
+  resize_mode: bilinear
+  crop: {mode: none}                       # 保留完整 501x501 覆盖范围后再缩放
+  sanitize: {fill: 0.0, clip: [0, 70]}
+  normalization: {mode: minmax, vmin: 0.0, vmax: 70.0}
+  thresholds: [20, 30, 35, 40]
+  motion_mask_threshold: 20
+  filter:
+    enabled: true
+    min_intensity: 20
+    min_rain_pixels: 16
+    min_rain_frames: 1
+    max_empty_ratio: 1.0
+  split_config:
+    mode: ratio
+    ratios: {train: 0.8, val: 0.1, test: 0.1}
+    seed: 2026
+  cache_index: true
+  cache_dir: outputs/cache
+  return_physical: true

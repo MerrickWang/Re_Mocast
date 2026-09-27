@@ -1,0 +1,41 @@
+# MoCast+ : deterministic backbone + residual diffusion (FR-DIFF-01, P8).
+# 所有扩散超参均未公开（R9），因此从 DiffCast 配置起步并全部配置化。
+defaults:
+  - mocast.yaml
+
+model:
+  name: mocast_plus
+  backbone:
+    name: mocast
+    input_len: 5
+    output_len: 20
+    target_size: [128, 128]
+    latent_channels: 64
+    encoder: {in_channels: 1, base_channels: 32, channels: [64, 64], downsample: 2}
+    pmm:
+      patch_size: 4
+      window: 3
+      heads: 4
+      attn_dim: 64
+      attn_scale: sqrt
+      potential: {hidden: 64, depth: 2, kernel: central, padding: replicate}
+      wavelet: {basis: haar, ll_mode: zero, enhance: sigmoid, hidden: 32}
+      pyramid: {mode: separate, kernels: [3, 5, 7], dilations: [1, 1, 1], channels: 48}
+    msm: {num_experts: 3, kernels: [3, 5, 7], channels: 48, out_channels: 48}
+    temporal: {embed_dim: 64, num_blocks: 2}
+    prediction: {mode: oneshot, spatial_blocks: 2}
+    advection: {unit: pixel, semantics: displacement, mode: bilinear, padding_mode: border, align_corners: true}
+    ablation: {}
+  diffusion:
+    num_steps: 1000             # 建议默认值（R9）
+    schedule: linear            # linear | cosine
+    residual_scale: 1.0         # 残差标准化尺度（建议用验证集统计量）
+    warmup_backbone: false
+  unet:
+    base_channels: 64
+    channel_mults: [1, 2, 4]
+    num_blocks: 2
+    cond_dim: 128
+    temporal_attention: true    # 论文明确：UNet + temporal attention + ConvGRU
+    conv_gru: true
+    num_heads: 4

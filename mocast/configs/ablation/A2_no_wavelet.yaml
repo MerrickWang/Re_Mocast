@@ -1,0 +1,10 @@
+# A2 -- 移除小波脉动分支（论文 Table 3 的 "w/o F"）
+defaults:
+  - ../model/mocast.yaml
+
+run:
+  name: A2_no_wavelet
+
+model:
+  ablation:
+    use_fluctuation: false

@@ -1,0 +1,10 @@
+# A3 -- 不做 mean/fluctuation 分解（单一可学习运动头）-> 验证 Reynolds 式分解
+defaults:
+  - ../model/mocast.yaml
+
+run:
+  name: A3_no_reynolds
+
+model:
+  ablation:
+    decompose: false

@@ -1,0 +1,12 @@
+# Experiment: full MoCast on SEVIR (main result, paper Table 1 first row group).
+defaults:
+  - ../dataset/sevir.yaml
+  - ../model/mocast.yaml
+  - ../train/default.yaml
+
+run:
+  name: sevir_mocast
+  tags: [sevir, mocast, main]
+
+model:
+  ablation: {}

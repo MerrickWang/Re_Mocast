@@ -1,0 +1,9 @@
+# Experiment: full MoCast on MeteoNet.
+defaults:
+  - ../dataset/meteonet.yaml
+  - ../model/mocast.yaml
+  - ../train/default.yaml
+
+run:
+  name: meteonet_mocast
+  tags: [meteonet, mocast, main]

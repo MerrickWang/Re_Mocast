@@ -1,0 +1,88 @@
+# MoCast model -- defaults follow the paper where it is explicit, and are marked
+# 【建议默认值】 where the public material is silent (risks R1-R3, R7).
+model:
+  name: mocast
+  input_len: 5                  # 论文明确
+  output_len: 20                # 论文明确
+  target_size: [128, 128]       # 论文明确（所有数据集统一）
+  latent_channels: 64
+
+  encoder:                      # FR-ENC-01 共享空间编码（时间维不折叠）
+    in_channels: 1
+    base_channels: 32
+    channels: [64, 64]
+    downsample: 2               # 建议默认值 -> latent 64x64（R1）
+    norm: group
+    act: gelu
+
+  pmm:                          # 6.1/6.2/6.3
+    patch_size: 4               # 建议默认值（R1）
+    patch_stride: null          # null = 不重叠；< patch_size 时块重叠并按覆盖率归一
+    window: 3                   # 建议默认值 KxK 邻域（R1）
+    heads: 4                    # 建议默认值（R1）
+    attn_dim: 64                # 建议默认值 d_e（R1）
+    attn_scale: sqrt            # sqrt(d_e)（需求文档公式）| d（论文行文）| none
+    attn_dropout: 0.0
+    motion_scale: auto          # auto = H / h_d，把势函数梯度换算为像素位移
+    potential:                  # 6.1 Helmholtz 平均运动
+      hidden: 64
+      depth: 2                  # 建议默认值（R3）
+      kernel: central           # central | sobel | forward （固定微分算子）
+      padding: replicate        # 边界策略必须记录
+      use_helmholtz: true       # 消融 A1 = false -> 可学习卷积运动头
+    wavelet:                    # 6.2 小波脉动
+      basis: haar               # haar（默认）| db2（消融 A7）
+      ll_mode: zero             # zero（默认）| keep | learnable（待确认项）
+      enhance: sigmoid          # sigmoid（默认）| softplus | residual
+      hidden: 32
+      grad_kernel: central
+    pyramid:                    # 6.3 多尺度运动特征
+      mode: separate            # separate（默认）| joint
+      kernels: [3, 5, 7]
+      dilations: [1, 1, 1]
+      channels: 48
+
+  msm:                          # 6.4 运动引导源汇建模
+    num_experts: 3              # 论文明确 S=3
+    kernels: [3, 5, 7]          # 建议默认值（R3）
+    dilations: [1, 1, 1]
+    channels: 48
+    out_channels: 48
+    stem_stride: auto          # auto = 与编码器同倍下采样（时空对齐约束）
+    stem_blocks: 1
+    norm: group
+    act: gelu
+    expert_hidden: 48
+    modulation_hidden: 24
+    gate_hidden: 32
+    gate_mode: softmax          # softmax（论文明确归一化）| uniform（消融 A5）| sigmoid
+    multiscale: true            # 消融 A4 = false
+
+  temporal:                     # FR-TEMP-01 双支路时间嵌入
+    embed_dim: 64
+    num_blocks: 2               # 建议默认值（R7）
+    kernel_size: 3
+
+  prediction:                   # FR-PRED-01
+    mode: oneshot               # oneshot（默认）| autoregressive（待确认）
+    spatial_blocks: 2
+    motion_clip: null           # 例如 8.0 可限制运动幅值（像素/帧）
+
+  advection:                    # FR-ADV-01；单位/方向/align_corners 必须记录（R5）
+    unit: pixel                 # pixel | normalized
+    semantics: displacement     # displacement（内容位移）| backward_flow（采样偏移）
+    mode: bilinear
+    padding_mode: border
+    align_corners: true
+
+  reconstruction:
+    teacher_forcing: false      # 论文用自回归（Eq.12）
+
+  ablation:                     # 8.3 消融矩阵（默认全部关闭）
+    use_mean: true
+    use_fluctuation: true
+    decompose: true
+    helmholtz: true
+    msm_multiscale: true
+    msm_gating: true
+    use_source_sink: true

@@ -1,0 +1,9 @@
+# Experiment: full MoCast on Shanghai.
+defaults:
+  - ../dataset/shanghai.yaml
+  - ../model/mocast.yaml
+  - ../train/default.yaml
+
+run:
+  name: shanghai_mocast
+  tags: [shanghai, mocast, main]

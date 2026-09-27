@@ -1,0 +1,18 @@
+# Small variant used for unit tests / CPU dry runs / CI (UT-08 relies on it).
+defaults:
+  - mocast.yaml
+
+model:
+  encoder: {in_channels: 1, base_channels: 16, channels: [32, 32], downsample: 4}
+  latent_channels: 32
+  pmm:
+    patch_size: 2
+    window: 3
+    heads: 2
+    attn_dim: 16
+    potential: {hidden: 32, depth: 1}
+    wavelet: {hidden: 16}
+    pyramid: {channels: 24}
+  msm: {num_experts: 3, channels: 24, out_channels: 24, expert_hidden: 24, modulation_hidden: 16, gate_hidden: 16}
+  temporal: {embed_dim: 32, num_blocks: 1}
+  prediction: {spatial_blocks: 1}

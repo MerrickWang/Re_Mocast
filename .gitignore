@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Data & artefacts (never commit datasets or experiment outputs)
+data/
+outputs/
+*.h5
+*.hdf5
+*.npz
+*.npy
+*.pth
+*.pt
+
+# Local reference documents (link the paper instead of redistributing it)
+/23353-AAAI26.WuB-DM.pdf
+/MoCast代码复现需求文档.docx
+
+# Credentials and local tooling state
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.codex/
+.agents/
+*.log
+*.zip
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

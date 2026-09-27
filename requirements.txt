@@ -1,0 +1,24 @@
+# MoCast reproduction -- runtime dependencies.
+# The paper trains on a single A100; the code is device agnostic (CUDA / CPU).
+# Install the CUDA build of PyTorch first, e.g.
+# RTX 5090 example (install the matching torch/torchvision pair first):
+#   pip install torch==2.10.0 torchvision==0.25.0 --index-url https://download.pytorch.org/whl/cu128
+# The lower bounds below are general dependencies, not a 5090 compatibility lock.
+torch>=2.1
+numpy>=1.24
+PyYAML>=6.0
+
+# --- dataset adapters ---------------------------------------------------------
+h5py>=3.8                # SEVIR VIL event files / HDF5 radar archives
+Pillow>=9.0              # Shanghai grayscale PNG radar frames
+
+# --- metrics ------------------------------------------------------------------
+torchvision>=0.16        # LPIPS backbone (used when the `lpips` package is absent)
+lpips>=0.1.4             # official LPIPS implementation (paper metric)
+
+# --- tooling ------------------------------------------------------------------
+matplotlib>=3.7          # visualisation tools
+tqdm>=4.66               # optional progress bars
+
+# --- development --------------------------------------------------------------
+pytest>=7.4

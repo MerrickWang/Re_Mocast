@@ -1,0 +1,17 @@
+# Experiment: MoCast+ (residual diffusion) on SEVIR -- stage two / P8.
+defaults:
+  - ../dataset/sevir.yaml
+  - ../model/mocast_plus.yaml
+  - ../train/default.yaml
+
+run:
+  name: sevir_mocast_plus
+  tags: [sevir, mocast_plus, diffusion]
+
+train:
+  epochs: 100
+  optimizer: {name: adamw, lr: 1.0e-4, weight_decay: 1.0e-2}
+  amp: true
+
+eval:
+  samples: 4          # probabilistic evaluation (4 samples per input)

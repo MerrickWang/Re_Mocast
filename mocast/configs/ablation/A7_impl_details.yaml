@@ -1,0 +1,19 @@
+# A7 -- 公开材料未给出的实现细节对照：小波基 / LL 处理 / 核尺寸 / 注意力尺度
+defaults:
+  - ../model/mocast.yaml
+
+run:
+  name: A7_impl_details
+
+model:
+  pmm:
+    attn_scale: d                 # 论文行文为 /d_e，需求文档公式为 /sqrt(d_e)
+    wavelet:
+      basis: db2                  # haar -> db2
+      ll_mode: keep               # zero -> keep（或 learnable）
+    pyramid:
+      kernels: [5, 9, 13]         # 更大的感受野
+      dilations: [1, 2, 3]
+  msm:
+    kernels: [3, 5, 7]
+    dilations: [1, 2, 3]          # 用膨胀卷积替代更大卷积核

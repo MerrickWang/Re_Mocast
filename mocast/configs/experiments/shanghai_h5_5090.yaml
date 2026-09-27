@@ -1,0 +1,26 @@
+defaults:
+  - ../dataset/shanghai.yaml
+  - ../model/mocast.yaml
+  - ../train/default.yaml
+
+run:
+  name: shanghai_h5_5090
+
+dataset:
+  h5_path: mocast/data/Mocast_shanghai.h5
+  # Assumption: stored uint8 values encode dBZ * 255 / 70.
+  # The supplied archive has no unit metadata; confirm with its producer.
+  # Use dbz instead if the stored values already represent dBZ.
+  h5_encoding: pixel_0_255
+  h5_val_fraction: 0.1
+  h5_split_seed: 2026
+  cache_dir: outputs/cache/shanghai_h5
+  # Preserve preselected events; each 25-frame dataset yields one window.
+  filter:
+    enabled: false
+
+train:
+  batch_size: 2
+  num_workers: 4
+  amp: true
+  amp_dtype: bfloat16

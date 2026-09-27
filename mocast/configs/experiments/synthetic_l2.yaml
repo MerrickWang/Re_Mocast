@@ -1,0 +1,35 @@
+# L2 验收实验：在合成数据上做机制级对比（完整模型 vs 消融 vs 经典基线）
+# 合成数据带有已知速度场，可在不下载真实数据集的情况下验证机制趋势（section 9 L2）。
+defaults:
+  - ../dataset/synthetic.yaml
+  - ../model/mocast_small.yaml
+  - ../train/default.yaml
+
+run:
+  name: synthetic_l2
+  tags: [l2, ablation]
+
+dataset:
+  n_sequences: 40
+  frames_per_sequence: 61        # (61-25)/12+1 = 4 个滑窗/序列
+  height: 64
+  width: 64
+  stride: 12
+  gen_seed: 2026
+  filter: {enabled: true, min_intensity: 0.2, min_rain_pixels: 8, min_rain_frames: 1}
+  split_config: {mode: ratio, ratios: {train: 0.7, val: 0.15, test: 0.15}, seed: 2026}
+
+model:
+  target_size: [64, 64]
+
+train:
+  epochs: 40
+  batch_size: 8
+  num_workers: 0
+  amp: true
+  log_every: 0
+  early_stop: {patience: 40, monitor: val_csi, mode: max}
+
+eval:
+  perceptual: false
+  lpips: false

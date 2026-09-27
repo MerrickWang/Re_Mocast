@@ -1,0 +1,33 @@
+# SEVIR (USA, 2017-2019, VIL, 5 min, ~1 km) -- section 3 of the specification.
+# 论文明确: 5 frames in / 20 frames out, resize to 128x128, thresholds below.
+# 待确认: 官方 split / 归一化上下限 -> 全部显式配置并写入审计文件 (FR-DATA-04).
+dataset:
+  name: sevir
+  raw_root: data/raw/sevir                 # 目录内含 SEVIR_VIL_*.h5
+  h5_key: vil                              # 官方事件文件的 key
+  frames_per_event: 49                     # 49 帧 x 5 min = 4 h
+  file_patterns: ["SEVIR_VIL*.h5", "**/SEVIR_VIL*.h5"]   # 子目录也可
+
+  input_len: 5                             # T_in（论文明确）
+  target_len: 20                           # T_out（论文明确）
+  stride: 12                               # 滑窗步长（DiffCast 风格；可配置）
+  resize: [128, 128]                       # 统一 128x128（FR-DATA-03）
+  resize_mode: area                        # 384 -> 128 为整数倍，块平均
+  crop: {mode: center, size: [384, 384]}   # 官方事件已是 384x384，先裁剪再缩放
+  sanitize: {fill: 0.0, clip: [0, 255]}    # VIL 物理范围
+  normalization: {mode: minmax, vmin: 0.0, vmax: 255.0}
+  thresholds: [16, 74, 133, 160, 181, 219] # 论文 metrics 阈值（VIL）
+  motion_mask_threshold: 16                # Eq.13 中 theta：数据集统计给出的显著降水阈值
+  filter:
+    enabled: true
+    min_intensity: 16
+    min_rain_pixels: 16
+    min_rain_frames: 1
+    max_empty_ratio: 1.0
+  split_config:
+    mode: ratio                            # ratio | hash | explicit | all
+    ratios: {train: 0.8, val: 0.1, test: 0.1}
+    seed: 2026
+  cache_index: true
+  cache_dir: outputs/cache
+  return_physical: true

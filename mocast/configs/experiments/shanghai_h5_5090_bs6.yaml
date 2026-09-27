@@ -1,0 +1,10 @@
+# Batch-size comparison using the same H5 split and corrected implementation.
+# Launch preset, not an archived config from the historical server run.
+defaults:
+  - shanghai_h5_5090.yaml
+
+run:
+  name: shanghai_h5_5090_bs6
+
+train:
+  batch_size: 6

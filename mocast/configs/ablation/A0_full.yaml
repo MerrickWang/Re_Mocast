@@ -1,0 +1,16 @@
+# A0 -- 完整 MoCast（主结果）
+defaults:
+  - ../model/mocast.yaml
+
+run:
+  name: A0_full
+
+model:
+  ablation:
+    use_mean: true
+    use_fluctuation: true
+    decompose: true
+    helmholtz: true
+    msm_multiscale: true
+    msm_gating: true
+    use_source_sink: true

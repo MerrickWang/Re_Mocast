@@ -1,0 +1,14 @@
+# A4 -- MSM 单尺度专家（论文 Table 3 的 "w/o MS"）
+defaults:
+  - ../model/mocast.yaml
+
+run:
+  name: A4_msm_single_scale
+
+model:
+  ablation:
+    msm_multiscale: false
+  msm:
+    num_experts: 1
+    kernels: [3]
+    dilations: [1]

@@ -1,0 +1,12 @@
+# A5 -- 平均融合，移除门控（验证运动自适应路由）
+defaults:
+  - ../model/mocast.yaml
+
+run:
+  name: A5_uniform_gate
+
+model:
+  ablation:
+    msm_gating: false
+  msm:
+    gate_mode: uniform

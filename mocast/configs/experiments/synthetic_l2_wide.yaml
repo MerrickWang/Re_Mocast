@@ -1,0 +1,35 @@
+# L2 验收（扩展数据规模版本）：减小过拟合与单次评估噪声，用于机制级对比。
+# 120 序列 x 61 帧 / stride 12 -> 4 窗/序列 = 480 窗（train 336 / val 72 / test 72）。
+defaults:
+  - ../dataset/synthetic.yaml
+  - ../model/mocast_small.yaml
+  - ../train/default.yaml
+
+run:
+  name: synthetic_l2_wide
+  tags: [l2, ablation, wide]
+
+dataset:
+  n_sequences: 60
+  frames_per_sequence: 61
+  height: 64
+  width: 64
+  stride: 12
+  gen_seed: 2026
+  filter: {enabled: true, min_intensity: 0.2, min_rain_pixels: 8, min_rain_frames: 1}
+  split_config: {mode: ratio, ratios: {train: 0.7, val: 0.15, test: 0.15}, seed: 2026}
+
+model:
+  target_size: [64, 64]
+
+train:
+  epochs: 30
+  batch_size: 8
+  num_workers: 0
+  amp: true
+  log_every: 0
+  early_stop: {patience: 60, monitor: val_csi, mode: max}
+
+eval:
+  perceptual: false
+  lpips: false

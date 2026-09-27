@@ -1,0 +1,56 @@
+# 训练配置 -- section 7（论文明确项 + 建议默认值）
+# 注意：数据集配置位于 dataset/*.yaml（通过 experiments/*.yaml 的 defaults 组合）。
+run:
+  name: mocast                        # 输出目录名
+  output_root: outputs
+  seed: 2026                          # 论文要求至少报告 2026/2027/2028
+  deterministic: true
+  tags: []
+
+train:
+  epochs: 200                         # 论文明确（最多 200 + early stopping）
+  batch_size: 6                       # 论文明确（单张 A100）
+  num_workers: 4
+  pin_memory: true
+  amp: true                           # 建议默认值
+  amp_dtype: float16                  # float16 | bfloat16（Blackwell/5090 推荐 bfloat16）
+  grad_clip: 1.0                      # 建议默认值
+  log_every: 50
+  val_every: 1
+  max_val_batches: null
+  optimizer:
+    name: adamw                       # 论文明确
+    lr: 1.0e-4                        # 论文明确
+    weight_decay: 1.0e-2              # 建议默认值
+    betas: [0.9, 0.999]
+  scheduler:
+    name: cosine                      # 论文明确
+    min_lr: 1.0e-6
+    warmup_epochs: 0
+  early_stop:
+    patience: 20                      # 建议默认值
+    monitor: val_csi                  # max
+    mode: max
+
+loss:
+  lambda_motion: 0.01                 # 论文明确
+  precip:
+    name: mse                         # 论文明确
+  motion:
+    enabled: true
+    mode: mse_mask                    # mse_mask（论文）| warp_consistency | both（R8）
+    smooth_window: 1
+    reduce: average                   # Eq.13: preserve average-pooled mask coverage
+    detach_target: false              # Eq.13 differentiates both adjacent motion fields
+
+eval:
+  thresholds: null                    # null -> 使用数据集阈值
+  pool_sizes: [4, 16]                 # CSI-P4 / CSI-P16（论文明确）
+  perceptual: true                    # SSIM / LPIPS
+  lpips: true
+  per_lead_time: false
+  max_batches: null
+
+logging:
+  save_visuals: false
+  visuals_every: 5

@@ -1,0 +1,9 @@
+# Experiment: L1 acceptance dry run on the synthetic dataset (small model, few epochs).
+defaults:
+  - ../dataset/synthetic.yaml
+  - ../model/mocast_small.yaml
+  - ../train/dry_run.yaml
+
+run:
+  name: synthetic_dryrun
+  tags: [l1, dryrun]

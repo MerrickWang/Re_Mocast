@@ -1,0 +1,10 @@
+# A6 -- 移除源汇项（仅平流）-> 验证生成/消散建模
+defaults:
+  - ../model/mocast.yaml
+
+run:
+  name: A6_no_source_sink
+
+model:
+  ablation:
+    use_source_sink: false

@@ -1,0 +1,33 @@
+# MeteoNet (France, 2016-2018, radar reflectivity, 5 min, 0.01 deg).
+# 待确认: 区域筛选 / 缺测处理 / 精确 split -> 配置化 + 审计。
+dataset:
+  name: meteonet
+  raw_root: data/raw/meteonet
+  layout: files                            # files | sequences | day
+  file_patterns: ["**/*.npz", "**/*.npy"]
+  npz_key: null                            # 缺省取第一个数组
+  frames_per_file: 0                       # 0 = 使用文件内全部帧
+
+  input_len: 5
+  target_len: 20
+  stride: 12
+  resize: [128, 128]
+  resize_mode: bilinear
+  crop: {mode: center, size: [232, 232]}   # 0.01 deg 网格的区域裁剪（建议默认值）
+  sanitize: {fill: 0.0, clip: [-10, 70]}   # dBZ 合理范围，越界视为缺测
+  normalization: {mode: minmax, vmin: -10.0, vmax: 70.0}
+  thresholds: [12, 18, 24, 32]
+  motion_mask_threshold: 12
+  filter:
+    enabled: true
+    min_intensity: 12
+    min_rain_pixels: 16
+    min_rain_frames: 1
+    max_empty_ratio: 1.0
+  split_config:
+    mode: ratio
+    ratios: {train: 0.8, val: 0.1, test: 0.1}
+    seed: 2026
+  cache_index: true
+  cache_dir: outputs/cache
+  return_physical: true

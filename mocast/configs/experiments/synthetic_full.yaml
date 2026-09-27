@@ -1,0 +1,30 @@
+# 论文几何尺寸（128x128）下的完整模型 dry-run：
+# 验证 128x128 / batch=6 / 默认 MoCast 结构能否端到端训练（L1 补充证据）。
+defaults:
+  - ../dataset/synthetic.yaml
+  - ../model/mocast.yaml
+  - ../train/default.yaml
+
+run:
+  name: synthetic_full
+  tags: [l1, full-geometry]
+
+dataset:
+  n_sequences: 24
+  frames_per_sequence: 25
+  stride: 5
+  gen_seed: 2026
+
+train:
+  epochs: 2
+  batch_size: 6
+  num_workers: 0
+  amp: true
+  log_every: 4
+  max_val_batches: 2
+  early_stop: {patience: 20, monitor: val_csi, mode: max}
+
+eval:
+  perceptual: false
+  lpips: false
+  max_batches: 2

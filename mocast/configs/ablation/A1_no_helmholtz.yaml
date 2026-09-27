@@ -1,0 +1,11 @@
+# A1 -- 移除 Helmholtz 结构先验（仅用可学习卷积运动头）-> 验证结构先验
+# 对照论文 Table 3 的 "w/o M"（去掉平均运动块）。
+defaults:
+  - ../model/mocast.yaml
+
+run:
+  name: A1_no_helmholtz
+
+model:
+  ablation:
+    helmholtz: false
